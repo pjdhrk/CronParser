@@ -76,7 +76,7 @@ public class CronApp {
 
     public static void main(String[] args) {
         CronApp cronApp = new CronApp();
-        if (args.length < 1 ) {
+        if (args.length != 1 ) {
             printUsage();
             return;
         }
@@ -91,7 +91,7 @@ public class CronApp {
 
     private static void printUsage() {
         System.out.print("""
-                Usage: java -jar Deliveroo-1.0.jar minutes hours daysOfMonth months daysOfWeek command
+                Usage: java -jar Deliveroo-1.0.jar "minutes hours daysOfMonth months daysOfWeek command"
                 """);
     }
 
