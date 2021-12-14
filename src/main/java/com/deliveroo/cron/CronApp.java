@@ -39,24 +39,40 @@ public class CronApp {
                     .collect(Collectors.toList())
     );
 
-    public void evaluateCronExpressions(String arg) {
+    public String evaluateCronExpressions(String arg) {
         String[] programArguments = arg.split("\\s+");
         if (programArguments.length < 6 ) {
             throw new IllegalArgumentException("Wrong number of arguments given");
         }
         String command = Arrays.stream(programArguments).skip(5).collect(Collectors.joining(" "));
 
-        String minutesValues = minutesParser.parse(programArguments[1]);
-        String hoursValues = hoursParser.parse(programArguments[2]);
-        String daysOfMonthValues = daysOfMonthParser.parse(programArguments[3]);
-        String daysOfWeekValues = daysOfMonthParser.parse(programArguments[3]);
-        String monthValues = daysOfMonthParser.parse(programArguments[3]);
+        String minutesValues = minutesParser.parse(programArguments[0]);
+        String hoursValues = hoursParser.parse(programArguments[1]);
+        String daysOfMonthValues = daysOfMonthParser.parse(programArguments[2]);
+        String monthValues = monthsParser.parse(programArguments[3]);
+        String daysOfWeekValues = daysOfWeekParser.parse(programArguments[4]);
+
+
+        return String.format("minute\t\t\t%s\n" +
+                        "hour\t\t\t%s\n" +
+                "day of month\t%s\n" +
+                "month\t\t\t%s\n" +
+                "day of week\t\t%s\n" +
+                "command\t\t\t%s",
+                minutesValues,
+                hoursValues,
+                daysOfMonthValues,
+                monthValues,
+                daysOfWeekValues,
+                command
+        );
 
     }
 
     public static void main(String[] args) {
         CronApp cronApp = new CronApp();
-        cronApp.evaluateCronExpressions(args[0]);
+        String result = cronApp.evaluateCronExpressions(args[0]);
+        System.out.println(result);
     }
 
     private class ParsingLogicFactory {
