@@ -24,7 +24,7 @@ public class CronApp {
             );
     ParsingLogic hoursParser = parsingLogicFactory.createParsingLogic( () ->
                     Stream
-                            .iterate(1, number -> number <= 24, number -> ++number)
+                            .iterate(0, number -> number < 24, number -> ++number)
                             .collect(Collectors.toList())
             );
     ParsingLogic daysOfWeekParser = parsingLogicFactory.createParsingLogic( () ->
