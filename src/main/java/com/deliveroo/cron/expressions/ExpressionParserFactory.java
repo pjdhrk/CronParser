@@ -13,29 +13,59 @@ public class ExpressionParserFactory {
 
         public ExpressionParser getPatternHandler(PatternType patternType) {
             return switch (patternType) {
-                case EVERY -> (definition, possibleValue) -> possibleValue.get().stream().map(String::valueOf).collect(Collectors.joining(DELIMITER));
-                case LISTED -> (definition, possibleValue) -> Pattern.compile(",").splitAsStream(definition).collect(Collectors.joining(DELIMITER));
+                case EVERY -> (definition, possibleValuesSupplier) -> possibleValuesSupplier.get().stream().map(String::valueOf).collect(Collectors.joining(DELIMITER));
+                case LISTED -> (definition, possibleValuesSupplier) -> {
+                    List<Integer> possibleValues = possibleValuesSupplier.get();
+                    int min = possibleValues.get(0);
+                    int max = possibleValues.get(possibleValues.size() - 1);
+                    return Pattern.compile(",").splitAsStream(definition)
+                            .map(Integer::valueOf)
+                            .sorted()
+                            .peek(value -> checkMax(value, max))
+                            .peek(value -> checkMin(value, min))
+                            .map(String::valueOf)
+                            .collect(Collectors.joining(DELIMITER));
+                };
                 case RECURRING -> (definition, possibleValuesSupplier) -> {
                     List<Integer> possibleValues = possibleValuesSupplier.get();
                     int min = possibleValues.get(0);
                     int max = possibleValues.get(possibleValues.size() - 1);
                     String[] split = definition.split("/");
                     Integer divider = split[0].equals("*") ? min : Integer.parseInt(split[0]);
+                    checkMin(divider, min);
                     Integer divisor = Integer.valueOf(split[1]);
+                    checkMax(divisor, max / 2);
                     return Stream.iterate(divider, result -> result < max, element -> element + divisor)
                             .map(String::valueOf)
                             .collect(Collectors.joining(DELIMITER));
 
                 };
-                case SCOPE -> (definition, possibleValue) -> {
+                case SCOPE -> (definition, possibleValuesSupplier) -> {
+                    List<Integer> possibleValues = possibleValuesSupplier.get();
                     String[] split = definition.split("-");
-                    Integer min = Integer.valueOf(split[0]);
-                    Integer max = Integer.valueOf(split[1]);
-                    return Stream.iterate(min, result -> result <= max, element -> ++element)
+                    Integer from = Integer.valueOf(split[0]);
+                    Integer to = Integer.valueOf(split[1]);
+                    int min = possibleValues.get(0);
+                    int max = possibleValues.get(possibleValues.size() - 1);
+                    checkMin(from, min);
+                    checkMax(to, max);
+                    return Stream.iterate(from, result -> result <= to, element -> ++element)
                             .map(String::valueOf)
                             .collect(Collectors.joining(DELIMITER));
                 };
             };
         }
+
+    private void checkMin(Integer given, int expected) {
+        if (given < expected ) {
+            throw new IllegalArgumentException("Value out of scope. Given " + given + " allowed " + expected);
+        }
+    }
+
+    private void checkMax(Integer given, int expected) {
+        if (given > expected ) {
+            throw new IllegalArgumentException("Value out of scope. Given " + given + " allowed " + expected);
+        }
+    }
 
 }

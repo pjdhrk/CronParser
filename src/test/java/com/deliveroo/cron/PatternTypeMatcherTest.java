@@ -1,11 +1,13 @@
 package com.deliveroo.cron;
 
 
+import com.deliveroo.cron.patterns.PatternFormatException;
 import com.deliveroo.cron.patterns.PatternType;
 import com.deliveroo.cron.patterns.PatternTypeMatcher;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class PatternTypeMatcherTest {
 
@@ -34,6 +36,11 @@ class PatternTypeMatcherTest {
     @Test
     void listed_pattern_should_be_detected() {
         assertThat(patternTypeMatcher.determinePatternType("1,3,4,5")).isEqualTo(PatternType.LISTED);
+    }
+
+    @Test
+    void unknown_pattern_should_throw_exception() {
+        assertThatThrownBy( () -> patternTypeMatcher.determinePatternType("-1/3")).isInstanceOf(PatternFormatException.class);
     }
 
 }
