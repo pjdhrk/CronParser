@@ -58,12 +58,12 @@ public class CronApp {
 
 
         return String.format("""
-                        minute\t\t\t%s
-                        hour\t\t\t%s
-                        day of month\t%s
-                        month\t\t\t%s
-                        day of week\t\t%s
-                        command\t\t\t%s""",
+                        minute        %s
+                        hour          %s
+                        day of month  %s
+                        month         %s
+                        day of week   %s
+                        command       %s""",
                 minutesValues,
                 hoursValues,
                 daysOfMonthValues,
@@ -76,8 +76,23 @@ public class CronApp {
 
     public static void main(String[] args) {
         CronApp cronApp = new CronApp();
-        String result = cronApp.evaluateCronExpressions(args[0]);
-        System.out.println(result);
+        if (args.length < 1 ) {
+            printUsage();
+            return;
+        }
+        try {
+            String result = cronApp.evaluateCronExpressions(args[0]);
+            System.out.println(result);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+    }
+
+    private static void printUsage() {
+        System.out.print("""
+                Usage: java -jar Deliveroo-1.0.jar minutes hours daysOfMonth months daysOfWeek command
+                """);
     }
 
     private class ParsingLogicFactory {
