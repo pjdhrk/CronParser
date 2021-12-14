@@ -1,4 +1,4 @@
-package com.deliveroo.cron;
+package com.deliveroo.cron.patterns;
 
 public class PatternFormatException extends RuntimeException {
 

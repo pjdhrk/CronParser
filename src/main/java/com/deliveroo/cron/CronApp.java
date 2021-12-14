@@ -1,5 +1,9 @@
 package com.deliveroo.cron;
 
+import com.deliveroo.cron.expressions.ExpressionParserFactory;
+import com.deliveroo.cron.patterns.PatternTypeMatcher;
+import com.deliveroo.cron.validation.PatternValidator;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
@@ -53,12 +57,13 @@ public class CronApp {
         String daysOfWeekValues = daysOfWeekParser.parse(programArguments[4]);
 
 
-        return String.format("minute\t\t\t%s\n" +
-                        "hour\t\t\t%s\n" +
-                "day of month\t%s\n" +
-                "month\t\t\t%s\n" +
-                "day of week\t\t%s\n" +
-                "command\t\t\t%s",
+        return String.format("""
+                        minute\t\t\t%s
+                        hour\t\t\t%s
+                        day of month\t%s
+                        month\t\t\t%s
+                        day of week\t\t%s
+                        command\t\t\t%s""",
                 minutesValues,
                 hoursValues,
                 daysOfMonthValues,
